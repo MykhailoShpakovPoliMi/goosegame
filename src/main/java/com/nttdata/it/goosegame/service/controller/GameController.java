@@ -1,8 +1,6 @@
 package com.nttdata.it.goosegame.service.controller;
 
-import com.nttdata.it.goosegame.service.exceptions.DuplicateNameException;
-import com.nttdata.it.goosegame.service.exceptions.GameNotStartedException;
-import com.nttdata.it.goosegame.service.exceptions.NotYourTurnException;
+import com.nttdata.it.goosegame.service.exceptions.*;
 import com.nttdata.it.goosegame.service.model.GameModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -48,7 +46,7 @@ public class GameController {
      * @throws DuplicateNameException if the name supplied is already present in the list of players*/
     public void addPlayer(String name) throws DuplicateNameException {
         if (model.isGameOn())
-            throw new UnsupportedOperationException("Game already started, cannot add players");
+            throw new GameAlreadyStartedException("Game already started, cannot add players");
         else
             model.addPlayer(name);
     }
@@ -57,9 +55,9 @@ public class GameController {
      * @throws UnsupportedOperationException if there are less than 2 players or the game has been already started*/
     public void startGame() {
         if (model.getPlayers().size() < 2)
-            throw new UnsupportedOperationException("Not enough players to start the game");
+            throw new NotEnoughPlayersException("Not enough players to start the game");
         else if (model.isGameOn())
-            throw new UnsupportedOperationException("Game already started");
+            throw new GameAlreadyStartedException("Game already started");
         else
             model.setGameOn(true);
     }
