@@ -1,4 +1,4 @@
-package com.nttdata.it.goosegame.exceptions;
+package com.nttdata.it.goosegame.service.exceptions;
 
 public class DuplicateNameException extends RuntimeException{
 

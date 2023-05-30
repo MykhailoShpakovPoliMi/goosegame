@@ -1,13 +1,16 @@
-package com.nttdata.it.goosegame.model;
+package com.nttdata.it.goosegame.service.model;
 
-import com.nttdata.it.goosegame.controller.Cell;
-import com.nttdata.it.goosegame.exceptions.DuplicateNameException;
-import com.nttdata.it.goosegame.view.GameView;
+import com.nttdata.it.goosegame.service.controller.Cell;
+import com.nttdata.it.goosegame.service.exceptions.DuplicateNameException;
+import com.nttdata.it.goosegame.service.view.GameView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+@Service
 public class GameModel {
 
     private final int MAX_CELL_NUM = 63;
@@ -18,7 +21,7 @@ public class GameModel {
     private boolean gameOn = false;
     private final GameView view;
 
-    public GameModel(GameView view) {
+    public GameModel(@Autowired GameView view) {
         this.view = view;
     }
 
@@ -90,7 +93,7 @@ public class GameModel {
     }
 
     /**@param cell the cell that user needs to make a checkout.
-     * Appends the check out message, returned by the cell, to the view.
+     * Appends the check-out message, returned by the cell, to the view.
      * updates current player`s position by calling updatePosition()*/
     public void checkOut(Cell cell){
         view.appendToMessage(cell.getOutMsg(getCurrentPosition(), getCurrentPlayer()));
@@ -119,6 +122,14 @@ public class GameModel {
 
     public void setGameOn(boolean gameOn) {
         this.gameOn = gameOn;
+    }
+
+    public void reset(){
+        playersPositions.clear();
+        currentTurn = 0;
+        playerRolls[0] = 0;
+        playerRolls[1] = 0;
+        steps = 0;
     }
 
     public boolean isGameOn() {

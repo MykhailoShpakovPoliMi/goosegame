@@ -1,7 +1,10 @@
-package com.nttdata.it.goosegame.view;
+package com.nttdata.it.goosegame.service.view;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class GameView {
-    private String message;
+    private String message = "";
 
     public void appendToMessage(String toAppend){
         this.message += toAppend;

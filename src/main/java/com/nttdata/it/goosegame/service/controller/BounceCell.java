@@ -1,6 +1,6 @@
-package com.nttdata.it.goosegame.controller;
+package com.nttdata.it.goosegame.service.controller;
 
-import com.nttdata.it.goosegame.model.GameModel;
+import com.nttdata.it.goosegame.service.model.GameModel;
 
 public class BounceCell extends Cell{
 

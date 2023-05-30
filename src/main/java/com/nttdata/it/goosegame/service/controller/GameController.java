@@ -1,11 +1,14 @@
-package com.nttdata.it.goosegame.controller;
+package com.nttdata.it.goosegame.service.controller;
 
-import com.nttdata.it.goosegame.exceptions.DuplicateNameException;
-import com.nttdata.it.goosegame.exceptions.GameNotStartedException;
-import com.nttdata.it.goosegame.exceptions.NotYourTurnException;
-import com.nttdata.it.goosegame.model.GameModel;
+import com.nttdata.it.goosegame.service.exceptions.DuplicateNameException;
+import com.nttdata.it.goosegame.service.exceptions.GameNotStartedException;
+import com.nttdata.it.goosegame.service.exceptions.NotYourTurnException;
+import com.nttdata.it.goosegame.service.model.GameModel;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
 /**This class is the controller of the game, it manages the game logic*/
+@Controller
 public class GameController {
 
     private final Cell[] board;
@@ -13,7 +16,7 @@ public class GameController {
     private int departurePosition;
 
     /**Initializes the board with cell types*/
-    GameController(GameModel model) {
+    GameController(@Autowired GameModel model) {
         this.model = model;
         board = new Cell[model.getMaxCellNum() + 1 + 1];
 
@@ -64,6 +67,7 @@ public class GameController {
     /**Ends the game by calling {@link GameModel#setGameOn(boolean)}*/
     protected void endGame() {
         model.setGameOn(false);
+        model.reset();
     }
 
     /**Generates random rolls and calls {@link #movePlayer(String, int[])}*/
@@ -95,10 +99,12 @@ public class GameController {
             throw new GameNotStartedException("game has not been started yet");
         else if (!model.getPlayers().contains(player))
             throw new IllegalArgumentException(player + " is not a player");
+        else if (rolls.length != 2)
+            throw new IllegalArgumentException("Invalid number of rolls");
         else if (!model.getCurrentPlayer().equals(player))
             throw new NotYourTurnException(player + ", it's not your turn");
         else if (rolls[0] < 1 || rolls[1] < 1 || rolls[0] > 6 || rolls[1] > 6)
-            throw new IllegalArgumentException("rolls must be positive and less than 6");
+            throw new IllegalArgumentException("Rolls must be positive and less than 6");
 
         departurePosition = model.getCurrentPosition();
         model.setRolls(rolls);

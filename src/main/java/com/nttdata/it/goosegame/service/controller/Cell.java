@@ -1,4 +1,6 @@
-package com.nttdata.it.goosegame.controller;
+package com.nttdata.it.goosegame.service.controller;
+
+import com.nttdata.it.goosegame.service.model.GameModel;
 
 /**
  * Singleton cell class*/
@@ -18,7 +20,7 @@ public class  Cell {
      * Makes an appropriate action based on the cell type ( Subclass of {@link Cell} )
      * <ul>
      *     <li>{@link Cell}, {@link StartingCell} - calls {@link GameController#finishTurn()}</li>
-     *     <li>{@link BridgeCell}, {@link BounceCell} set the necessary number of steps by calling {@link com.nttdata.it.goosegame.model.GameModel#setSteps(int)}
+     *     <li>{@link BridgeCell}, {@link BounceCell} set the necessary number of steps by calling {@link GameModel#setSteps(int)}
      *     and then call {@link GameController#transit()}</li>
      *     <li>{@link GooseCell} just calls {@link GameController#transit()} since steps must correspond to the last player`s rolls</li>
      *     <li>{@link WinningCell} calls {@link GameController#endGame()}</li>

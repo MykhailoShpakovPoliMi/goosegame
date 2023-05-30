@@ -1,4 +1,4 @@
-package com.nttdata.it.goosegame.controller;
+package com.nttdata.it.goosegame.service.controller;
 
 public class GooseCell extends Cell{
     private static GooseCell instance = null;
