@@ -21,16 +21,21 @@ public class GameController {
         for (int i = 0; i <= model.getMaxCellNum(); i++) {
             Cell cell;
 
-            if (i == 0)
+            if (i == 0) {
                 cell = StartingCell.getInstance();
-            else if (i == 6)
+            }
+            else if (i == 6) {
                 cell = BridgeCell.getInstance();
-            else if (i == 5 || i == 9 || i == 14 || i == 18 || i == 23 || i == 27)
+            }
+            else if (i == 5 || i == 9 || i == 14 || i == 18 || i == 23 || i == 27) {
                 cell = GooseCell.getInstance();
-            else if (i == model.getMaxCellNum())
+            }
+            else if (i == model.getMaxCellNum()) {
                 cell = WinningCell.getInstance();
-            else
+            }
+            else {
                 cell = Cell.getInstance();
+            }
 
             board[i] = cell;
         }
@@ -45,21 +50,26 @@ public class GameController {
     /** Calls {@link GameModel#addPlayer(String)}
      * @throws DuplicateNameException if the name supplied is already present in the list of players*/
     public void addPlayer(String name) throws DuplicateNameException {
-        if (model.isGameOn())
+        if (model.isGameOn()) {
             throw new GameAlreadyStartedException("Game already started, cannot add players");
-        else
+        }
+        else {
             model.addPlayer(name);
+        }
     }
 
     /**Starts the game by calling {@link GameModel#setGameOn(boolean)}
      * @throws UnsupportedOperationException if there are less than 2 players or the game has been already started*/
     public void startGame() {
-        if (model.getPlayers().size() < 2)
+        if (model.getPlayers().size() < 2) {
             throw new NotEnoughPlayersException("Not enough players to start the game");
-        else if (model.isGameOn())
+        }
+        else if (model.isGameOn()) {
             throw new GameAlreadyStartedException("Game already started");
-        else
+        }
+        else {
             model.setGameOn(true);
+        }
     }
 
     /**Ends the game by calling {@link GameModel#setGameOn(boolean)}*/
@@ -89,20 +99,25 @@ public class GameController {
      * Updates {@link #departurePosition} and calls {@link GameModel#setRolls(int[])}
      * Calls {@link #transit()}
      * @throws GameNotStartedException if the game is not started yet
-     * @throws IllegalArgumentException if the player is not in the list of players or if the rolls are not positive and less or equal than 6
+     * @throws IllegalArgumentException if the player is not in the list of players or if the rolls are not positive and less or equal than 6 or rolls.length is not equal 2
      * @throws NotYourTurnException if it's not the player's turn*/
     public void movePlayer(String player, int[] rolls) {
 
-        if (!model.isGameOn())
+        if (!model.isGameOn()) {
             throw new GameNotStartedException("game has not been started yet");
-        else if (!model.getPlayers().contains(player))
+        }
+        else if (!model.getPlayers().contains(player)) {
             throw new IllegalArgumentException(player + " is not a player");
-        else if (rolls.length != 2)
+        }
+        else if (rolls.length != 2) {
             throw new IllegalArgumentException("Invalid number of rolls");
-        else if (!model.getCurrentPlayer().equals(player))
+        }
+        else if (!model.getCurrentPlayer().equals(player)) {
             throw new NotYourTurnException(player + ", it's not your turn");
-        else if (rolls[0] < 1 || rolls[1] < 1 || rolls[0] > 6 || rolls[1] > 6)
+        }
+        else if (rolls[0] < 1 || rolls[1] < 1 || rolls[0] > 6 || rolls[1] > 6) {
             throw new IllegalArgumentException("Rolls must be positive and less than 6");
+        }
 
         departurePosition = model.getCurrentPosition();
         model.setRolls(rolls);

@@ -1,0 +1,283 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > RequestHandler</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.nttdata.it.goosegame.web</a>
+</div>
+
+<h1>Coverage Summary for Class: RequestHandler (com.nttdata.it.goosegame.web)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RequestHandler</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (35/35)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.nttdata.it.goosegame.web;
+&nbsp;
+&nbsp;import com.nttdata.it.goosegame.service.controller.GameController;
+&nbsp;import com.nttdata.it.goosegame.service.exceptions.*;
+&nbsp;import com.nttdata.it.goosegame.service.view.GameView;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import io.swagger.v3.oas.annotations.Parameter;
+&nbsp;import io.swagger.v3.oas.annotations.media.Content;
+&nbsp;import io.swagger.v3.oas.annotations.media.Schema;
+&nbsp;import io.swagger.v3.oas.annotations.responses.ApiResponse;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.Arrays;
+&nbsp;import java.util.Optional;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/goose&quot;)
+&nbsp;public class RequestHandler {
+&nbsp;    private final GameController controller;
+&nbsp;    private final GameView view;
+&nbsp;
+<b class="fc">&nbsp;    public RequestHandler(@Autowired GameController controller, @Autowired GameView view) {</b>
+<b class="fc">&nbsp;        this.controller = controller;</b>
+<b class="fc">&nbsp;        this.view = view;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/add/{name}&quot;)
+&nbsp;    @Operation(
+&nbsp;            tags={&quot;Add Player&quot;},
+&nbsp;            operationId = &quot;addPlayer&quot;,
+&nbsp;            summary = &quot;Add not existent player to the game&quot;,
+&nbsp;            description = &quot;Add a new player providing a name&quot;,
+&nbsp;            parameters = @Parameter(
+&nbsp;                    name = &quot;name&quot;,
+&nbsp;                    description = &quot;a name to be added to the list of players&quot;,
+&nbsp;                    example = &quot;John&quot;
+&nbsp;            ),
+&nbsp;            responses = {
+&nbsp;                    @ApiResponse(
+&nbsp;                            responseCode = &quot;200&quot;,
+&nbsp;                            content = @Content(schema = @Schema(implementation = ResponseEntity.class), mediaType = &quot;text/plain&quot;),
+&nbsp;                            description = &quot;List of all added players&quot;
+&nbsp;                    ),
+&nbsp;                    @ApiResponse(
+&nbsp;                            responseCode = &quot;400&quot;,
+&nbsp;                            content = @Content(schema = @Schema(implementation = ResponseEntity.class), mediaType = &quot;text/plain&quot;),
+&nbsp;                            description = &quot;The name provided is already present in the list of players&quot;
+&nbsp;                    ),
+&nbsp;                    @ApiResponse(
+&nbsp;                            responseCode = &quot;405&quot;,
+&nbsp;                            content = @Content(schema = @Schema(implementation = ResponseEntity.class), mediaType = &quot;text/plain&quot;),
+&nbsp;                            description = &quot;The game has been already started. Can&#39;t add players any more&quot;
+&nbsp;                    )
+&nbsp;            }
+&nbsp;    )
+&nbsp;    public ResponseEntity&lt;?&gt; addPlayer(@PathVariable String name){
+&nbsp;
+&nbsp;        String message;
+&nbsp;        try {
+<b class="fc">&nbsp;            controller.addPlayer(name);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        catch (DuplicateNameException ex) {</b>
+<b class="fc">&nbsp;            message = view.getMessage();</b>
+<b class="fc">&nbsp;            view.resetMessage();</b>
+<b class="fc">&nbsp;            return new ResponseEntity&lt;&gt;(message, HttpStatus.BAD_REQUEST);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        catch (GameAlreadyStartedException ex1) {</b>
+<b class="fc">&nbsp;            return new ResponseEntity&lt;&gt;(ex1.getMessage(), HttpStatus.METHOD_NOT_ALLOWED);</b>
+<b class="fc">&nbsp;        }</b>
+<b class="fc">&nbsp;        message = view.getMessage();</b>
+<b class="fc">&nbsp;        view.resetMessage();</b>
+&nbsp;        //return message;
+<b class="fc">&nbsp;        return new ResponseEntity&lt;&gt;(message, HttpStatus.OK);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/start&quot;)
+&nbsp;    @Operation(
+&nbsp;            tags={&quot;Start the game&quot;},
+&nbsp;            operationId = &quot;startGame&quot;,
+&nbsp;            summary = &quot;Bring the game into the ready state&quot;,
+&nbsp;            description = &quot;After calling this endpoint you will no longer be able to add a new player&quot;,
+&nbsp;            responses = {
+&nbsp;                    @ApiResponse(
+&nbsp;                            responseCode = &quot;200&quot;,
+&nbsp;                            content = @Content(schema = @Schema(implementation = ResponseEntity.class), mediaType = &quot;text/plain&quot;),
+&nbsp;                            description = &quot;The game was started successfully&quot;
+&nbsp;                    ),
+&nbsp;                    @ApiResponse(
+&nbsp;                            responseCode = &quot;403&quot;,
+&nbsp;                            content = @Content(schema = @Schema(implementation = ResponseEntity.class), mediaType = &quot;text/plain&quot;),
+&nbsp;                            description = &quot;The are not enough players to start the game ( at least 2 players are required)&quot;
+&nbsp;                    ),
+&nbsp;                    @ApiResponse(
+&nbsp;                            responseCode = &quot;405&quot;,
+&nbsp;                            content = @Content(schema = @Schema(implementation = ResponseEntity.class), mediaType = &quot;text/plain&quot;),
+&nbsp;                            description = &quot;The game has been already started.&quot;
+&nbsp;                    )
+&nbsp;            }
+&nbsp;    )
+&nbsp;    public ResponseEntity&lt;?&gt; startGame(){
+&nbsp;        try {
+<b class="fc">&nbsp;            controller.startGame();</b>
+<b class="fc">&nbsp;            return new ResponseEntity&lt;&gt;(&quot;The game has been started successfully&quot;, HttpStatus.OK);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        catch (GameAlreadyStartedException ex1){</b>
+<b class="fc">&nbsp;            return new ResponseEntity&lt;&gt;(ex1.getMessage(), HttpStatus.METHOD_NOT_ALLOWED);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        catch (NotEnoughPlayersException ex2){</b>
+<b class="fc">&nbsp;            return new ResponseEntity&lt;&gt;(ex2.getMessage(), HttpStatus.FORBIDDEN);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    @GetMapping(&quot;/move/{name}&quot;)
+&nbsp;    @Operation(
+&nbsp;            tags={&quot;Make a move&quot;},
+&nbsp;            operationId = &quot;movePlayer&quot;,
+&nbsp;            summary = &quot;Move existent player on the game board&quot;,
+&nbsp;            description = &quot;Move an existent player providing it&#39;s name and 2 values of dice rolls (optional)&quot;,
+&nbsp;            parameters = {
+&nbsp;                    @Parameter(name = &quot;name&quot;, description = &quot;name of an existent player to move&quot;, example = &quot;John&quot;),
+&nbsp;                    @Parameter(
+&nbsp;                            name = &quot;rolls&quot;,
+&nbsp;                            description = &quot;2 dice rolls to make a custom move with.\nIf not provided, the game will generate 2 random numbers&quot;,
+&nbsp;                            example = &quot;1,6&quot;
+&nbsp;                    )
+&nbsp;            },
+&nbsp;            responses = {
+&nbsp;                    @ApiResponse(
+&nbsp;                            responseCode = &quot;200&quot;,
+&nbsp;                            content = @Content(schema = @Schema(implementation = ResponseEntity.class), mediaType = &quot;text/plain&quot;),
+&nbsp;                            description = &quot;The move has been done successfully&quot;
+&nbsp;                    ),
+&nbsp;                    @ApiResponse(
+&nbsp;                            responseCode = &quot;400&quot;,
+&nbsp;                            content = @Content(schema = @Schema(implementation = ResponseEntity.class), mediaType = &quot;text/plain&quot;),
+&nbsp;                            description = &quot;Bad request parameters. See the message for details&quot;
+&nbsp;                    ),
+&nbsp;                    @ApiResponse(
+&nbsp;                            responseCode = &quot;403&quot;,
+&nbsp;                            content = @Content(schema = @Schema(implementation = ResponseEntity.class), mediaType = &quot;text/plain&quot;),
+&nbsp;                            description = &quot;The player is trying to make a move while it&#39;s not his turn&quot;
+&nbsp;                    ),
+&nbsp;                    @ApiResponse(
+&nbsp;                            responseCode = &quot;405&quot;,
+&nbsp;                            content = @Content(schema = @Schema(implementation = ResponseEntity.class), mediaType = &quot;text/plain&quot;),
+&nbsp;                            description = &quot;The game has not been started yet.&quot;
+&nbsp;                    )
+&nbsp;            }
+&nbsp;    )
+&nbsp;    public ResponseEntity&lt;?&gt; movePlayer(@PathVariable String name, @RequestParam Optional&lt;String[]&gt; rolls){
+&nbsp;
+&nbsp;        try {
+<b class="fc">&nbsp;            rolls.ifPresentOrElse(</b>
+<b class="fc">&nbsp;                    (r) -&gt; controller.movePlayer(name, Arrays.stream(r).mapToInt(Integer::parseInt).toArray()),</b>
+<b class="fc">&nbsp;                    () -&gt; controller.movePlayer(name)</b>
+&nbsp;            );
+&nbsp;        }
+<b class="fc">&nbsp;        catch (NumberFormatException ex){</b>
+<b class="fc">&nbsp;            return new ResponseEntity&lt;&gt;(&quot;Invalid rolls parameter&quot;, HttpStatus.BAD_REQUEST);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        catch (GameNotStartedException ex1){</b>
+<b class="fc">&nbsp;            return new ResponseEntity&lt;&gt;(ex1.getMessage(), HttpStatus.METHOD_NOT_ALLOWED);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        catch (IllegalArgumentException ex2){</b>
+<b class="fc">&nbsp;            return new ResponseEntity&lt;&gt;(ex2.getMessage(), HttpStatus.BAD_REQUEST);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        catch (NotYourTurnException ex3){</b>
+<b class="fc">&nbsp;            return new ResponseEntity&lt;&gt;(ex3.getMessage(), HttpStatus.FORBIDDEN);</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;
+<b class="fc">&nbsp;        String message = view.getMessage();</b>
+<b class="fc">&nbsp;        view.resetMessage();</b>
+&nbsp;
+<b class="fc">&nbsp;        return new ResponseEntity&lt;&gt;(message, HttpStatus.OK);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-01 23:44</div>
+</div>
+</body>
+</html>

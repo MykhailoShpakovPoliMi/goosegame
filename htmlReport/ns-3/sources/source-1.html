@@ -1,0 +1,242 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > GameModel</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.nttdata.it.goosegame.service.model</a>
+</div>
+
+<h1>Coverage Summary for Class: GameModel (com.nttdata.it.goosegame.service.model)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GameModel</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    87.5%
+  </span>
+  <span class="absValue">
+    (14/16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    95.6%
+  </span>
+  <span class="absValue">
+    (43/45)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.nttdata.it.goosegame.service.model;
+&nbsp;
+&nbsp;import com.nttdata.it.goosegame.service.controller.Cell;
+&nbsp;import com.nttdata.it.goosegame.service.exceptions.DuplicateNameException;
+&nbsp;import com.nttdata.it.goosegame.service.view.GameView;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.Set;
+&nbsp;
+&nbsp;@Service
+&nbsp;public class GameModel {
+&nbsp;
+<b class="fc">&nbsp;    private final int MAX_CELL_NUM = 63;</b>
+<b class="fc">&nbsp;    private final Map&lt;String, Integer&gt; playersPositions = new HashMap&lt;String, Integer&gt;();</b>
+<b class="fc">&nbsp;    private int currentTurn = 0;</b>
+<b class="fc">&nbsp;    private int[] playerRolls = new int[2];</b>
+<b class="fc">&nbsp;    private int steps = 0;</b>
+<b class="fc">&nbsp;    private boolean gameOn = false;</b>
+&nbsp;    private final GameView view;
+&nbsp;
+<b class="fc">&nbsp;    public GameModel(@Autowired GameView view) {</b>
+<b class="fc">&nbsp;        this.view = view;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public int getMaxCellNum() {
+<b class="fc">&nbsp;        return MAX_CELL_NUM;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**@return the current position of the current player*/
+&nbsp;    public int getCurrentPosition(){
+<b class="fc">&nbsp;        String curPlayer = (String) playersPositions</b>
+<b class="fc">&nbsp;                .keySet()</b>
+<b class="fc">&nbsp;                .toArray()[(currentTurn)%(playersPositions.keySet().size())];</b>
+&nbsp;
+<b class="fc">&nbsp;        return playersPositions.get(curPlayer);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**@return the current player`s name*/
+&nbsp;    public String getCurrentPlayer(){
+<b class="fc">&nbsp;        return (String) playersPositions</b>
+<b class="fc">&nbsp;                .keySet()</b>
+<b class="fc">&nbsp;                .toArray()[(currentTurn)%(playersPositions.keySet().size())];</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Set&lt;String&gt; getPlayers(){
+<b class="fc">&nbsp;        return playersPositions.keySet();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**Adds a player to the game and puts it on the starting cell. Appends a message appropriate message to the view
+&nbsp;     * in case exception was throw or not.
+&nbsp;     * @param name the name of the player to add to the game
+&nbsp;     * @throws DuplicateNameException if the name is a duplicate. Appends a message to the view
+&nbsp;     * */
+&nbsp;    public void addPlayer(String name){
+&nbsp;
+<b class="fc">&nbsp;        if (playersPositions.keySet().contains(name)) {</b>
+<b class="fc">&nbsp;            view.appendToMessage(name + &quot;: already existing player&quot;);</b>
+<b class="fc">&nbsp;            throw new DuplicateNameException();</b>
+&nbsp;        }else {
+<b class="fc">&nbsp;            playersPositions.put(name, 0);</b>
+<b class="fc">&nbsp;            view.appendToMessage(&quot;players: &quot; + playersPositions.keySet());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**@param rolls roll 1 and roll 2 thrown by the current player
+&nbsp;     * &lt;ul&gt;
+&nbsp;     * &lt;li&gt;sets the rolls of the current player&lt;/li&gt;
+&nbsp;     * &lt;li&gt;appends a message to the view&lt;/li&gt;
+&nbsp;     * &lt;li&gt;calls setSteps() to set the steps of the current player. steps will be used in updatePosition() method&lt;/li&gt;
+&nbsp;     * &lt;/ul&gt;
+&nbsp;     * */
+&nbsp;    public void setRolls(int[] rolls){
+<b class="fc">&nbsp;        playerRolls[0] = rolls[0];</b>
+<b class="fc">&nbsp;        playerRolls[1] = rolls[1];</b>
+<b class="fc">&nbsp;        view.appendToMessage(getCurrentPlayer() + &quot; rolls: &quot; + playerRolls[0] + &quot;, &quot; + playerRolls[1] + &quot;. &quot;);</b>
+&nbsp;
+<b class="fc">&nbsp;        setSteps(playerRolls[0] + playerRolls[1]);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public int[] getRolls(){
+<b class="fc">&nbsp;        int[] retRolls = new int[2];</b>
+<b class="fc">&nbsp;        retRolls[0] = playerRolls[0];</b>
+<b class="fc">&nbsp;        retRolls[1] = playerRolls[1];</b>
+<b class="fc">&nbsp;        return retRolls;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**sets the number of steps that user needs to make for displacement*/
+&nbsp;    public void setSteps(int steps){
+<b class="fc">&nbsp;        this.steps = steps;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**@param cell the cell that user needs to make a checkout.
+&nbsp;     * Appends the check-out message, returned by the cell, to the view.
+&nbsp;     * updates current player`s position by calling updatePosition()*/
+&nbsp;    public void checkOut(Cell cell){
+<b class="fc">&nbsp;        view.appendToMessage(cell.getOutMsg(getCurrentPosition(), getCurrentPlayer()));</b>
+<b class="fc">&nbsp;        updatePosition();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**Increases current player`s position by the sum of 2 rolls or by the number of steps that has been set.
+&nbsp;     * If the player exceeds all the cells, it ends up on the bounce cell which is MAX_CELL_NUM + 1*/
+&nbsp;    private void updatePosition(){
+<b class="fc">&nbsp;        if (getCurrentPosition() + steps &gt; getMaxCellNum())</b>
+<b class="fc">&nbsp;            playersPositions.put(getCurrentPlayer(), getMaxCellNum() + 1);</b>
+&nbsp;        else
+<b class="fc">&nbsp;            playersPositions.put(getCurrentPlayer(), getCurrentPosition() + steps);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**@param cell the cell that user needs to make a checkin
+&nbsp;     * Appends the check in message ,returned from by the cell, to the view*/
+&nbsp;    public void checkIn(Cell cell){
+<b class="fc">&nbsp;        view.appendToMessage(cell.getInMsg(getCurrentPosition(), getCurrentPlayer()));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**Increments currentTurn*/
+&nbsp;    public void nextTurn(){
+<b class="fc">&nbsp;        currentTurn++;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setGameOn(boolean gameOn) {
+<b class="nc">&nbsp;        this.gameOn = gameOn;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void reset(){
+<b class="fc">&nbsp;        playersPositions.clear();</b>
+<b class="fc">&nbsp;        currentTurn = 0;</b>
+<b class="fc">&nbsp;        playerRolls[0] = 0;</b>
+<b class="fc">&nbsp;        playerRolls[1] = 0;</b>
+<b class="fc">&nbsp;        steps = 0;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean isGameOn() {
+<b class="nc">&nbsp;        return gameOn;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-01 23:44</div>
+</div>
+</body>
+</html>

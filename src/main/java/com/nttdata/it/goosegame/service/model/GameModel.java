@@ -14,7 +14,7 @@ import java.util.Set;
 public class GameModel {
 
     private final int MAX_CELL_NUM = 63;
-    private static final Map<String, Integer> playersPositions = new HashMap<String, Integer>();
+    private final Map<String, Integer> playersPositions = new HashMap<String, Integer>();
     private int currentTurn = 0;
     private int[] playerRolls = new int[2];
     private int steps = 0;
@@ -49,8 +49,8 @@ public class GameModel {
         return playersPositions.keySet();
     }
 
-    /**Adds a player to the game and puts it on the starting cell. Appends a message to the view whether
-     * exception is thrown or not.
+    /**Adds a player to the game and puts it on the starting cell. Appends a message appropriate message to the view
+     * in case exception was throw or not.
      * @param name the name of the player to add to the game
      * @throws DuplicateNameException if the name is a duplicate. Appends a message to the view
      * */
